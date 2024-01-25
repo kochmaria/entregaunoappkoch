@@ -5,7 +5,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>Mi Aplicacion para Android</Text>
-      
+       
 
       <Text></Text>
       <StatusBar style="auto" />
