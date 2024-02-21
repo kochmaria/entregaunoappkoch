@@ -6,6 +6,7 @@ export default function App() {
   const [searchText, setSearchText] = useState('');
   const [productList, setProductList] = useState([]);
 
+
   
   const DATA = [
     {
