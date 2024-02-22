@@ -1,11 +1,14 @@
+// App.js
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Pressable, FlatList, Modal } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Pressable, FlatList } from 'react-native';
+import RemoveModal from './src/components/RemoveModal'; 
 
 export default function App() {
   const [counter, setCounter] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [productList, setProductList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleAddCounter = () => setCounter(counter + 1);
 
@@ -23,14 +26,21 @@ export default function App() {
   };
 
   const handleRemoveProduct = () => {
-    // Aquí puedes agregar la lógica para eliminar el producto
-    setModalVisible(false); // Cierra el modal después de eliminar el producto
+    if (selectedProduct) {
+      const updatedProductList = productList.filter(product => product.id !== selectedProduct.id);
+      setProductList(updatedProductList);
+      setModalVisible(false);
+      console.log('Producto eliminado:', selectedProduct);
+    }
   };
 
   const renderProductItem = ({ item }) => (
     <View style={styles.productItem}>
       <Text style={styles.products}>{item.name}</Text>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
+      <TouchableOpacity onPress={() => {
+        setSelectedProduct(item);
+        setModalVisible(true);
+      }}>
         <Text style={styles.removeButton}>Eliminar</Text>
       </TouchableOpacity>
     </View>
@@ -39,24 +49,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.innerModalContainer}>
-            <Text style={styles.modalText}>¿Quieres eliminar el producto?</Text>
-            <TouchableOpacity style={styles.button} onPress={handleRemoveProduct}>
-              <Text style={styles.buttonText}>Eliminar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <RemoveModal
+        modalVisible={modalVisible}
+        closeModal={() => setModalVisible(false)}
+        removeItem={handleRemoveProduct}
+      />
       <View style={styles.header}>
         <Text style={styles.cartText}>Carrito</Text>
         <Image
@@ -69,7 +66,7 @@ export default function App() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder='search product'
+          placeholder='Buscar producto'
           value={searchText}
           onChangeText={text => setSearchText(text)}
         />
@@ -152,34 +149,5 @@ const styles = StyleSheet.create({
   counterText: {
     fontSize: 20,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  innerModalContainer: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    elevation: 5,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 18,
-  },
-  button: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-    margin: 10,
-    backgroundColor: 'blue',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
 });
+
